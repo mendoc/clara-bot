@@ -1,0 +1,10 @@
+/env
+.env
+
+.idea
+
+/*.txt
+
+__pycache__
+
+!requirements.txt
