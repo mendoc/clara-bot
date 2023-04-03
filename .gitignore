@@ -2,8 +2,10 @@
 .env
 
 .idea
+.gitpod.yml
 
 /*.txt
+/*.ogg
 
 __pycache__
 
