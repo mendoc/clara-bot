@@ -37,29 +37,37 @@ async def init_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Conversation reinitialisée")
 
 
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    save_prompt(update.message.chat.id, "Human: " + update.message.text)
-    prompt = get_prompt(update.message.chat.id) + "\nAI:"
-    response = generate_response(prompt)
-    save_prompt(update.message.chat.id, "AI:" + response)
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=response)
+async def send_response(chatid: str, message: str, context: ContextTypes.DEFAULT_TYPE):
+    history = get_prompt(chatid)
+    query = "Human: " + message + "\nAI:"
+    response = generate_response(history + query)
+    save_prompt(chatid, query + response)
+    await context.bot.send_message(chat_id=chatid, text=response)
 
+
+async def voice_to_text(file_name: str, lang: str="fr"):
+    model = whisper.load_model("small")
+    result = model.transcribe(file_name, language=lang, fp16=False)
+    trans = result["text"]
+    return trans
+
+
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await send_response(update.message.chat.id, update.message.text, context)
+    
 
 async def voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    c_time = time()
-    # get basic info about the voice note file and prepare it for downloading
-    new_file = await context.bot.get_file(update.message.voice.file_id)
-    # return
-    # download the voice note as a file
-    filename = f"{update.message.chat.id}.ogg"
-    r = await new_file.download_to_drive(custom_path=filename)
-    print(type(r), r)
-    model = whisper.load_model("small")
-    result = model.transcribe(filename, language="fr", fp16=False)
-    trans = result["text"] + "\n\nTime: " + str(int(time() - c_time)) + " s."
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=trans)
+    # Save voice message to the disk
+    voice_file = await context.bot.get_file(update.message.voice.file_id)
+    file_name = f"{update.message.chat.id}.ogg"
+    await voice_file.download_to_drive(custom_path=file_name)
 
+    # Transcribe voice to text
+    trans = await voice_to_text(file_name)
 
+    # Handle text with chatGPT and send response to user
+    if len(trans) > 0:
+        await send_response(update.message.chat.id, trans, context)
 
 
 if __name__ == '__main__':
