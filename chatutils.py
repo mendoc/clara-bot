@@ -9,7 +9,7 @@ def generate_response(prompt):
         model="text-davinci-003",
         prompt=prompt,
         temperature=0.9,
-        max_tokens=150,
+        max_tokens=450,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0.6,
