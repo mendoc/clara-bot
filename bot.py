@@ -37,11 +37,12 @@ async def init_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    save_prompt(update.message.chat.id, "Human: " + update.message.text)
-    prompt = get_prompt(update.message.chat.id) + "\nAI:"
+    save_prompt(update.message.chat.id, "user: " + update.message.text + "[stop]")
+    prompt = get_prompt(update.message.chat.id) + "\nassistant:"
     response = generate_response(prompt)
-    save_prompt(update.message.chat.id, "AI:" + response)
+    save_prompt(update.message.chat.id, "assistant:" + response + "[stop]")
     await context.bot.send_message(chat_id=update.effective_chat.id, text=response)
+
 
 if __name__ == '__main__':
     application = ApplicationBuilder().token(os.getenv("BOT_TOKEN")).build()

@@ -1,35 +1,39 @@
 # clara-bot
-Un bot Telegram basé sur chatGPT
+
+Un bot Telegram utilisant les modèles de langage de Mistral et de OpenAI.
 
 ## Prérequis
-- Python 3.7 ou supérieur
-- Un compte [OpenAI](https://beta.openai.com/account/api-keys)
+
+- Docker
+- Un compte [Mistral](https://console.mistral.ai/user/api-keys/) ou [OpenAI](https://platform.openai.com/api-keys)
 - Un token de [bot Telegram](https://www.commentcoder.com/bot-telegram/)
 
+## Configuration
 
-## Installation
-```bash
-virtualenv .clara
-virtualenv -p /usr/bin/python3.7 .clara
-source .clara/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-```
+1. Renommez le fichier ```.env.example``` en  ```.env```
+2. Modifiez le fichier ```.env``` en renseignant votre [clé API Mistral](https://console.mistral.ai/user/api-keys/) (ou [OpenAI](https://platform.openai.com/api-keys)) et le token du bot Telegram.
+Choisissez également le modèle à utiliser : ```mistral``` pour **mistral-tiny** ou ```openai``` pour **gpt-3.5-turbo**.
 
-Modifiez le fichier ```.env``` en renseignant les clés API OpenAI et du bot Telegram
 ```bash
+MISTRAL_API_KEY=
 OPENAI_API_KEY=
 BOT_TOKEN=
+MODEL=mistral
 ```
 
-## Lancement
+## Lancer le bot
+
 ```bash
-python bot.py
+docker build -t clara-bot .
+docker run --name clara --rm clara-bot
 ```
-```CTRL+C``` pour stopper le bot.
 
+Ou si vous êtes sous Linux, vous pouvez simplement faire :
 
-## Désactiver environnement Python
 ```bash
-deactivate
+make
 ```
+
+## Stopper le bot
+
+Faites ```CTRL+C``` pour stopper le bot.

@@ -1,0 +1,7 @@
+/*.txt
+Dockerfile
+LICENSE
+Makefile
+README.md
+
+!requirements.txt
